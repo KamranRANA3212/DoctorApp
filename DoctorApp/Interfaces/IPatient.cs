@@ -6,7 +6,7 @@ namespace DoctorApp.Interfaces
 {
     public interface IPatient
     {
-        Task<object> AddPatientAsync(PatientDTO patient, string userId);
+        Task<object> AddPatientAsync(PatientDTO patient);
 
         Task<object> GetPatientAsync(string id);
 
@@ -29,5 +29,6 @@ namespace DoctorApp.Interfaces
         Task<object> SearchDoctor(string filter);
 
         Task<IList<DoctorDTO>> GetTopRatedDoctors();
+       //  double GetDoctorRatings(int doctorid);
     }
 }

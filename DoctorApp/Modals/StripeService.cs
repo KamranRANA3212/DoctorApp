@@ -82,6 +82,7 @@ namespace DoctorApp.Modals
             }
             catch (Stripe.StripeException e)
             {
+                throw e;
             }
         }
 

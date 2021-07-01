@@ -1,17 +1,21 @@
 ﻿using DoctorApp.DTO_s;
 using DoctorApp.Interfaces;
 using DoctorApp.Modals;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Stripe;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -26,13 +30,17 @@ namespace DoctorApp.Services
         private UserManager<ApplicationUser> _userManager;
         private SignInManager<ApplicationUser> _signInManager;
         private IConfiguration _configuration;
+        public static IWebHostEnvironment _envirnment;
+        
 
-        public AccountService(ApplicationDbContext context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration)
+        public AccountService(ApplicationDbContext context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration,IWebHostEnvironment environment)
         {
             _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
+            _envirnment = environment;
+           
         }
 
         public async Task<LoginResponse> Login(SignIn model)
@@ -160,6 +168,8 @@ namespace DoctorApp.Services
 
         public async Task<object> Register(SignUp model)
         {
+             
+            
             ApplicationUser user = new ApplicationUser()
             {
                 Email = model.Email,
@@ -169,7 +179,9 @@ namespace DoctorApp.Services
                 Name = model.FirstName + " " + model.LastName,
             };
 
+
             var userStatus = await _userManager.CreateAsync(user, model.Password);
+
 
             if (userStatus.Succeeded)
             {
@@ -181,9 +193,13 @@ namespace DoctorApp.Services
                     {
                         // make account for doctor
                         var userDetial = await _userManager.FindByEmailAsync(model.Email);
-
+                       
+                        
+                        string uniqueFileName = ImageUpload(model);
                         Doctor doctor = new Doctor()
                         {
+                            FirstName=model.FirstName,
+                            LastName=model.LastName,
                             LicenceNumber = model.LicenceNumber,
                             IsLicenceVerified = false,
                             RegistrationCode = new Random().Next(999, 9999),
@@ -192,8 +208,13 @@ namespace DoctorApp.Services
                             AssistantName = model.AssistantName,
                             AssistantNumber = model.AssistantNumber,
                             CreatedDate = DateTime.UtcNow.AddHours(5),
-                        };
+                            //Image=objfile.file.FileName
+                            Image = uniqueFileName
+                           
 
+
+                        };                            
+                                     
                         doctor.DoctorSpeciality = new List<DoctorSpeciality>();
 
                         foreach (var id in model.SpecialityIds)
@@ -240,6 +261,23 @@ namespace DoctorApp.Services
             return false;
         }
 
+        private string ImageUpload([FromForm] SignUp img)
+        {
+            string uniqueFileName = null;
+
+            if (img.image != null)
+            {
+                string uploadsFolder = Path.Combine(_envirnment.WebRootPath, "images");
+                uniqueFileName =  Guid.NewGuid().ToString() + "_" + img.image.FileName;
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    img.image.CopyTo(fileStream);
+                }
+            }
+            return uniqueFileName;
+        }
+
         private async Task<bool> AddQualificationAndExperience(SignUp model, int id)
         {
             List<DoctorQualification> doctorQualifications = new List<DoctorQualification>();
@@ -271,6 +309,7 @@ namespace DoctorApp.Services
 
                 doctorExperience.Add(doctorexperience);
             }
+            
             _context.DoctorQualification.AddRange(doctorQualifications);
             _context.DoctorExperience.AddRange(doctorExperience);
 
@@ -418,5 +457,7 @@ namespace DoctorApp.Services
                 Message = "User is not valid "
             };
         }
+
+       
     }
 }

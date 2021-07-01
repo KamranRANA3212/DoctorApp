@@ -8,6 +8,7 @@ namespace DoctorApp.Interfaces
     public interface IAccount
     {
         Task<object> Register(SignUp signUp);
+       
 
         Task<LoginResponse> Login(SignIn signIn);
 

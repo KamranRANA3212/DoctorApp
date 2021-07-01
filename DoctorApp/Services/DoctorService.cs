@@ -183,7 +183,9 @@ namespace DoctorApp.Services
             {
                 return new ShortResponse() { Status = "fail", Error = "Can not proceed request" };
             }
-
+            doctor.FirstName = doctorDTO.FirstName;
+            doctor.LastName = doctorDTO.LastName;
+            
             doctorDTO.Image = doctorDTO.Image;
 
             doctorDTO.UpdatedDate = DateTime.UtcNow.AddHours(5);
@@ -250,6 +252,7 @@ namespace DoctorApp.Services
         {
             var user = await _context.Doctor.FirstOrDefaultAsync(z => z.User_Id == userId);
 
+
             user.IsOnline = !user.IsOnline;
 
             var status = await _context.SaveChangesAsync() >= 1;
@@ -307,7 +310,7 @@ namespace DoctorApp.Services
         public async Task<object> GetMyWallet(string userId)
         {
             var transactios = await _context.Transaction.Include(z => z.Appointment).Where(z => z.Appointment.Doctor.ApplicationUser.Id == userId &&
-                                                                      z.Status == (int)Status.Approved)
+                              z.Status == (int)Status.Approved)
                 .Select(z => new Transactions()
                 {
                     Id = z.Id,
@@ -346,9 +349,9 @@ namespace DoctorApp.Services
             var currentDate = DateTime.UtcNow.AddHours(5);
 
             var appointments = await _context.Appointment.Include(z => z.Patient).Where(z => z.Doctor.User_Id == userId &&
-                                                                                                     filter == "past" ? z.Date.Date < currentDate.Date :
-                                                                                                     filter == "today" ? z.Date.Date == currentDate.Date :
-                                                                                                     z.Date > currentDate.Date)
+                               filter == "past" ? z.Date.Date < currentDate.Date :
+                               filter == "today" ? z.Date.Date == currentDate.Date :
+                               z.Date > currentDate.Date)
                  .Select(dto => new AppointmentDTO()
                  {
                      Id = dto.Id,

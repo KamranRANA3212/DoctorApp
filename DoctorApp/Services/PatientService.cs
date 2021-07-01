@@ -4,10 +4,12 @@ using DoctorApp.enums;
 using DoctorApp.Interfaces;
 using DoctorApp.Modals;
 using GeoCoordinatePortable;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,35 +19,63 @@ namespace DoctorApp.Services
     {
         private ApplicationDbContext _context;
         private IMapper _mapper;
+        public static IWebHostEnvironment _envirnment;
 
-        public PatientService(ApplicationDbContext context, IMapper mapper)
+        public PatientService(ApplicationDbContext context, IMapper mapper,IWebHostEnvironment environment)
         {
             _context = context;
             _mapper = mapper;
+            _envirnment = environment;
         }
 
-        public async Task<object> AddPatientAsync(PatientDTO patientDTO, string userId)
+        public async Task<object> AddPatientAsync(PatientDTO patientDTO)
         {
-            if (!await _context.Patient.AnyAsync(z => z.User_Id == userId))
-            {
-                Patient patient = new Patient();
+            if (patientDTO!=null)
+               try {
+                    {
+                        string uniquefile = ImageUpload(patientDTO);
+                        Patient patient = new Patient();
 
-                patientDTO.CreatedDate = DateTime.UtcNow.AddHours(5);
-                patientDTO.UpdatedDate = default;
-                patientDTO.User_Id = userId;
+                       patient.Image = uniquefile;
+                        patient.CreatedDate = DateTime.UtcNow.AddHours(5);
+                        patient.UpdatedDate = default;
+                        /*patient.User_Id = userId;*/
+                        
+                      //  patient.Image = uniquefile;
+                       // _mapper.Map(patientDTO, patient);
 
-                _mapper.Map(patientDTO, patient);
+                        _context.Patient.Add(patient);
 
-                _context.Patient.Add(patient);
+                        await _context.SaveChangesAsync();
 
-                await _context.SaveChangesAsync();
-
-                return Utilities.Response<PatientDTO>.GenerateResponse("succcess", new List<PatientDTO>(), null, new List<string>(), "Patient Added Successfully!");
+                        return Utilities.Response<PatientDTO>.GenerateResponse("succcess", new List<PatientDTO>(), null, new List<string>(), "Patient Added Successfully!");
+                    }
+                    
             }
+                catch(Exception ex)
+                {
+                    throw ex;
+                }
             else
             {
                 return Utilities.Response<PatientDTO>.GenerateResponse("succcess", new List<PatientDTO>(), null, new List<string>(), "Profile Already Exist!");
             }
+        }
+           private string ImageUpload([FromForm] PatientDTO img)
+        {
+            string uniqueFileName = null;
+
+            if (img.Image != null)
+            {
+                string uploadsFolder = Path.Combine(_envirnment.WebRootPath, "images");
+                uniqueFileName =  Guid.NewGuid().ToString() + "_" + img.Image.FileName;
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    img.Image.CopyTo(fileStream);
+                }
+            }
+            return uniqueFileName;
         }
 
         public async Task<object> CancelAppointment(CancelAppointmentDTO appointmentDTO)
@@ -112,7 +142,7 @@ namespace DoctorApp.Services
             }
             catch (Exception ex)
             {
-                return null;
+                throw ex;
             }
         }
 
@@ -196,7 +226,7 @@ namespace DoctorApp.Services
         {
             var patient = await _context.Patient.Include(z => z.ApplicationUser).Select(patiet => new PatientDTO()
             {
-                Id = patiet.Id,
+                //Id = patiet.Id,
                 FullName = patiet.FirstName + " " + patiet.LastName,
                 Phone = patiet.ApplicationUser.PhoneNumber,
                 Email = patiet.ApplicationUser.Email,
@@ -302,7 +332,7 @@ namespace DoctorApp.Services
             try
             {
                 var doctors = await _context.Doctor.Include(z => z.DoctorCertificates)
-                                                     .Where(z => z.ApplicationUser.IsActive == false && (z.HospitalLocation.Contains(filter) || z.FirstName.Contains(filter) || z.LastName.Contains(filter)))
+                              .Where(z => z.ApplicationUser.IsActive == false && (z.HospitalLocation.Contains(filter) || z.FirstName.Contains(filter) || z.LastName.Contains(filter)))
                             .Select(doctor => new DoctorDTO()
                             {
                                 Id = doctor.Id,
@@ -330,8 +360,9 @@ namespace DoctorApp.Services
             }
             catch (Exception ex)
             {
+                throw ex;
             }
-            return null;
+          //  return null;
         }
 
         public double GetDoctorRatings(int doctorId)
@@ -383,5 +414,7 @@ namespace DoctorApp.Services
 
             return doctors;
         }
+
+       
     }
 }

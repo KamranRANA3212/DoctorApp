@@ -34,7 +34,6 @@ namespace DoctorApp.Services
             _config = config;
             _env = env;
         }
-
         public async Task<ShortResponse> DeleteAppointment(int appointmentId)
         {
             var appointment = await _context.Appointment.FirstOrDefaultAsync(z => z.Id == appointmentId);
@@ -198,7 +197,7 @@ namespace DoctorApp.Services
                 }
                 catch (Exception ex)
                 {
-                    throw;
+                    throw ex;
                 }
             };
         }

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +21,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Stripe;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace DoctorApp
 {
@@ -125,13 +127,42 @@ namespace DoctorApp
                      return new BadRequestObjectResult(errorResponse);
                  });
 
-            services.AddSwaggerGen(c => c.SwaggerDoc(name: "v1", new OpenApiInfo { Title = "Api For Doctor/Patient App", Version = "v1" }));
+            /* services.AddSwaggerGen(c => c.SwaggerDoc(name: "v1", new OpenApiInfo 
+             { Title = "Api For Doctor/Patient App", Version = "v1" }));*/
+            services.AddSwaggerGen(setup =>
+            {
+                // Include 'SecurityScheme' to use JWT Authentication
+                var jwtSecurityScheme = new OpenApiSecurityScheme
+                {
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    Name = "JWT Authentication",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Description = "Put your JWT Bearer token on textbox below!",
+
+                    Reference = new OpenApiReference
+                    {
+                        Id = JwtBearerDefaults.AuthenticationScheme,
+                        Type = ReferenceType.SecurityScheme
+                    }
+                };
+
+                setup.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
+
+                setup.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        { jwtSecurityScheme, Array.Empty<string>() }
+    });
+
+            });
 
             services.AddScoped<IUnitOfWork, UnitOfWorkService>();
             services.AddTransient<UserService, UserService>();
             services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimPrincipleFactory>();
 
             services.AddCors();
+           
 
             StripeConfiguration.ApiKey = Configuration["StripeConfig:ApiKey"];
         }

@@ -13,7 +13,6 @@ namespace DoctorApp.Modals
         public int RegistrationCode { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-
         public string FatherName { get; set; }
         public string LicenceNumber { get; set; }
         public bool IsLicenceVerified { get; set; }
@@ -28,7 +27,6 @@ namespace DoctorApp.Modals
         public string AssistantNumber { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
-
         public string User_Id { get; set; }
         public string Image { get; set; }
         public bool IsOnline { get; set; }

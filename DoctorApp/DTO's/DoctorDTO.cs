@@ -18,7 +18,6 @@ namespace DoctorApp.DTO_s
         public string Email { get; set; }
         public string Phone { get; set; }
         public string Description { get; set; }
-
         public bool IsLicenceVerified { get; set; }
         public string HospitalLocation { get; set; }
         public string PostalCode { get; set; }
@@ -34,7 +33,6 @@ namespace DoctorApp.DTO_s
         public Qualification[] Qualifications { get; set; }
         public Experience[] Experience { get; set; }
         public string Image { get; set; }
-
         public double Lat { get; set; }
         public double Long { get; set; }
         public int[] CertificationsId { get; set; }

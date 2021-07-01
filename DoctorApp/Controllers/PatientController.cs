@@ -43,11 +43,11 @@ namespace DoctorApp.Controllers
         }
 
         [HttpPost("Add")]
-        public async Task<IActionResult> AddPatient(PatientDTO patient)
+        public async Task<IActionResult> AddPatient([FromForm]PatientDTO patient)
         {
             var user = HttpContext.User;
 
-            var response = await _uow.Patient.AddPatientAsync(patient, user.Claims.FirstOrDefault(z => z.Type == "userId").Value);
+            var response = await _uow.Patient.AddPatientAsync(patient);
             return Ok(response);
         }
 
@@ -121,5 +121,12 @@ namespace DoctorApp.Controllers
 
             return Ok(response);
         }
+        //[HttpPost("DoctorRattings")]
+      /*  public double DoctorRatting([FromBody]int doc)
+        {
+            double doctor = _uow.Patient.GetDoctorRatings(doc);
+            return doctor;
+            
+        }*/
     }
 }

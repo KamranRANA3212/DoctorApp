@@ -18,6 +18,7 @@ namespace DoctorApp.Controllers
         /// Perform all accont related operations
         /// </summary>
         private IUnitOfWork _uow;
+       
 
         public AccountController(IUnitOfWork uow)
         {
@@ -48,12 +49,13 @@ namespace DoctorApp.Controllers
 
         [HttpPost("Register")]
         [AllowAnonymous]
-        public async Task<IActionResult> Register(SignUp signUp)
+        public async Task<IActionResult> Register([FromForm]SignUp signUp)
         {
             object response = await _uow.Account.Register(signUp);
 
             return Ok(response);
         }
+       
 
         [HttpPost("Admins")]
         public async Task<IActionResult> GetAdmin()
@@ -62,6 +64,8 @@ namespace DoctorApp.Controllers
 
             return Ok(response);
         }
+        
+       
 
         [HttpPost("Delete")]
         public async Task<IActionResult> DeleteAdmin()

@@ -32,7 +32,7 @@ namespace DoctorApp.Services
             _env = env;
         }
 
-        public IAccount Account => new AccountService(_context, _userManager, _signInManager, _config);
+        public IAccount Account => new AccountService(_context, _userManager, _signInManager, _config,_env);
         public IDoctor Doctor => new DoctorService(_context, _mapper, _config);
 
         public IDashBoard DashBoard => new DashBoardService(_context, _mapper);
@@ -45,7 +45,7 @@ namespace DoctorApp.Services
 
         public IDoctorTimeSchedule DoctorTimeSchedule => new DoctorTimeScheduleService(_context, _mapper);
 
-        public IPatient Patient => new PatientService(_context, _mapper);
+        public IPatient Patient => new PatientService(_context, _mapper,_env);
 
         public async Task<bool> SaveAsync()
         {

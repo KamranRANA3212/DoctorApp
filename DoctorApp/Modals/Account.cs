@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,14 +14,20 @@ namespace DoctorApp.Modals
         public string Password { get; set; }
         public string Role { get; set; }
         public decimal Fee { get; set; }
+
         public string AssistantName { get; set; }
         public string AssistantNumber { get; set; }
         public string Phone { get; set; }
+        public IFormFile image { get; set; }
         public int[] SpecialityIds { get; set; }
         public Qualification[] Qualification { get; set; }
         public Experience[] Experience { get; set; }
         public string LicenceNumber { get; set; }
+        
+       
     }
+   
+    
 
     public class Qualification
     {
@@ -50,5 +57,10 @@ namespace DoctorApp.Modals
         public string OldPassword { get; set; }
         public string NewPassword { get; set; }
         public string ConfirmPassword { get; set; }
+    }
+    public class ViewModelSignIn
+    {
+       public string ImageName { get; set; }
+        public IFormFile file { get; set; }
     }
 }
