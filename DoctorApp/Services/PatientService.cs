@@ -35,8 +35,7 @@ namespace DoctorApp.Services
                     {
                         string uniquefile = ImageUpload(patientDTO);
                         Patient patient = new Patient();
-
-                       patient.Image = uniquefile;
+                        patient.Image = uniquefile;
                         patient.CreatedDate = DateTime.UtcNow.AddHours(5);
                         patient.UpdatedDate = default;
                         /*patient.User_Id = userId;*/
@@ -162,7 +161,7 @@ namespace DoctorApp.Services
                                                 .Include(z => z.DoctorQualification)
                                                 .Where(z => z.ApplicationUser.IsActive == true)
                                                 .Select(doctor => new DoctorDTO()
-                                                {
+                                                { 
                                                     Id = doctor.Id,
                                                     FullName = doctor.FirstName + " " + doctor.LastName,
                                                     IsLicenceVerified = doctor.IsLicenceVerified,

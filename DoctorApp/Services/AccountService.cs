@@ -241,6 +241,35 @@ namespace DoctorApp.Services
                             };
                         }
                     }
+                  else if (model.Role=="Patient")
+                    {
+                        var detail =  _userManager.FindByEmailAsync(model.Email);
+                        string userimage = ImageUpload(model);
+                        Patient patient = new Patient
+                        {
+                            FirstName = model.FirstName,
+                            LastName = model.LastName,
+                            Description = model.Description,
+                            Image = userimage,
+                            CreatedDate = DateTime.UtcNow.AddHours(5),
+                            UpdatedDate=default,
+                            Lat=model.lat,
+                            Long=model.lang,
+                            Location=model.Location                                                    
+                           
+                        };
+                        _context.Patient.Add(patient);
+                        var res = _context.SaveChangesAsync();
+                        
+                            return new
+                            {
+                                Status = "success",
+                                Message = "Congratulations! Your account has been created",
+                                Errors = new List<string>()
+                            };
+                            
+
+                    }
                 }
             }
             else

@@ -14,6 +14,10 @@ namespace DoctorApp.Modals
         public string Password { get; set; }
         public string Role { get; set; }
         public decimal Fee { get; set; }
+        public string Description { get; set; }
+        public double lat { get; set; }
+        public double lang { get; set; }
+        public string Location { get; set; }
 
         public string AssistantName { get; set; }
         public string AssistantNumber { get; set; }
@@ -23,6 +27,7 @@ namespace DoctorApp.Modals
         public Qualification[] Qualification { get; set; }
         public Experience[] Experience { get; set; }
         public string LicenceNumber { get; set; }
+        
         
        
     }
