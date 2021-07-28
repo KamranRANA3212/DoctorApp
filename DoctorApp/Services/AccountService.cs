@@ -8,18 +8,26 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-
+using Nest;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Stripe;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
+using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
+using Twilio;
+using Twilio.Clients;
+using Twilio.Rest.Api.V2010.Account;
+using Twilio.Types;
 
 namespace DoctorApp.Services
 {
@@ -40,8 +48,10 @@ namespace DoctorApp.Services
             _signInManager = signInManager;
             _configuration = configuration;
             _envirnment = environment;
-           
-        }
+            
+
+    }
+
 
         public async Task<LoginResponse> Login(SignIn model)
         {
@@ -189,7 +199,7 @@ namespace DoctorApp.Services
 
                 if (claimStatus.Succeeded)
                 {
-                    if (model.Role == "Doctor")
+                    if (model.Role == "Doctor" || model.Role=="doctor")
                     {
                         // make account for doctor
                         var userDetial = await _userManager.FindByEmailAsync(model.Email);
@@ -325,7 +335,7 @@ namespace DoctorApp.Services
                 doctorQualifications.Add(doctorQualification);
             }
 
-            //add Experience
+            //add Experienc
 
             foreach (var experience in model.Experience)
             {
@@ -353,7 +363,7 @@ namespace DoctorApp.Services
         }
 
         public async Task<object> BlockUnlockAdmin(string email)
-        {
+            {
             var user = await _userManager.FindByEmailAsync(email);
 
             user.IsActive = !user.IsActive;
@@ -362,7 +372,7 @@ namespace DoctorApp.Services
 
             return new { Status = "success", Message = "Status has been changed", User = user };
         }
-
+      
         public async Task<object> DeleteAdmin(string id)
         {
             _context.Users.Remove(await _context.Users.FirstOrDefaultAsync(z => z.Id == id));
@@ -483,10 +493,32 @@ namespace DoctorApp.Services
             return new ShortResponse()
             {
                 Status = "fail",
-                Message = "User is not valid "
+                Message = " The Phone number  "+forgotPassword.PhoneNumber+" doesn't not exist"
             };
         }
+        public Task SendEmailAsync(string email, string subject, string message)
+        {
+            // Plug in your email service here to send an email.
+            return Task.FromResult(0);
+        }
+        
+      /*  public Task SendSmsAsync(string number, string message)
+        {
+            // Plug in your SMS service here to send a text message.
+            // Your Account SID from twilio.com/console
+            var accountSid = Options.SMSAccountIdentification;
+            // Your Auth Token from twilio.com/console
+            var authToken = Options.SMSAccountPassword;
 
-       
+            TwilioClient.Init(accountSid, authToken);
+
+            return MessageResource.CreateAsync(
+              to: new PhoneNumber(number),
+              from: new PhoneNumber(Options.SMSAccountFrom),
+              body: message);
+        }*/
+
+
+
     }
 }

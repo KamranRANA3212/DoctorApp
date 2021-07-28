@@ -1,5 +1,7 @@
 ﻿using DoctorApp.DTO_s;
 using DoctorApp.Modals;
+using DoctorApp.Services;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -25,5 +27,6 @@ namespace DoctorApp.Interfaces
         Task<ShortResponse> CreateCard(DTO_s.Card card);
 
         Task<ShortResponse> ForgotPassword(ForgotPassword forgotPassword);
+      //  Task<ShortResponse> Twofactorauth(IdentityMessage message);
     }
 }

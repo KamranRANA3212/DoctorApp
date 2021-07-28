@@ -48,6 +48,7 @@ namespace DoctorApp
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
                   .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+            services.Configure<SmsOptions>(Configuration);
 
             services.Configure<IdentityOptions>(options =>
             {
@@ -77,8 +78,7 @@ namespace DoctorApp
                 option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 option.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 option.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-                .AddJwtBearer(options =>
+            }).AddJwtBearer(options =>
             {
                 options.SaveToken = true;
                 options.RequireHttpsMetadata = false;
@@ -109,7 +109,6 @@ namespace DoctorApp
             });
 
             services.AddAutoMapper(typeof(Startup));
-
             services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.IgnoreNullValues = true;
@@ -165,6 +164,8 @@ namespace DoctorApp
            
 
             StripeConfiguration.ApiKey = Configuration["StripeConfig:ApiKey"];
+
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -43,7 +43,7 @@ namespace DoctorApp.Controllers
         [HttpPost("RefreshToken")]
         [AllowAnonymous]
         public IActionResult RefreshToken([FromBody] string token)
-        {
+            {
             return Ok(_uow.Account.Refresh(token));
         }
 
@@ -131,5 +131,7 @@ namespace DoctorApp.Controllers
 
             return Ok(response);
         }
+        
+       
     }
 }

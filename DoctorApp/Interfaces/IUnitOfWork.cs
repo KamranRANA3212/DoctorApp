@@ -14,6 +14,7 @@ namespace DoctorApp.Interfaces
         IDoctorTimeSchedule DoctorTimeSchedule { get; }
         IPatient Patient { get; }
 
+       
         Task<bool> SaveAsync();
     }
 }

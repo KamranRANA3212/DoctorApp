@@ -244,9 +244,9 @@ namespace DoctorApp.Services
             var currentDate = DateTime.UtcNow.AddHours(5).Date;
 
             var data = await _context.Appointment.Where(z => z.Patient.ApplicationUser.Id == userId &&
-                                                            filter == "past" ? z.Date.Date <= currentDate :
-                                                            filter == "today" ? z.Date.Date == currentDate :
-                                                            z.Date.Date > currentDate)
+                       filter == "past" ? z.Date.Date <= currentDate :
+                       filter == "today" ? z.Date.Date == currentDate :
+                       z.Date.Date > currentDate)
                  .Select(z => new AppointmentDTO()
                  {
                      Id = z.Id,

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -61,6 +62,7 @@ namespace DoctorApp.Modals
         public string Email { get; set; }
         public string OldPassword { get; set; }
         public string NewPassword { get; set; }
+        [Compare("NewPassword", ErrorMessage ="password and confirm password didn't match")]
         public string ConfirmPassword { get; set; }
     }
     public class ViewModelSignIn

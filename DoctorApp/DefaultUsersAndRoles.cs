@@ -63,7 +63,6 @@ namespace DoctorApp
                     UserName = "admin@gmail.com",
                     EmailConfirmed = true,
                 };
-
                 var result = userManager.CreateAsync(user, "Bscs@123456").Result;
                 if (result.Succeeded)
                 {
